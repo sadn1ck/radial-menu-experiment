@@ -6,51 +6,114 @@ import {
   PieChartIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useKey, useMouse } from "rooks";
 
 interface IRadialMenu {
   show: boolean;
 }
+
+function ChatMessages(props: {
+  actions: Array<(typeof items)[0] & { ts: number }>;
+}) {
+  return (
+    <>
+      <div className="flex flex-col fixed bottom-20 right-4 w-60 gap-4">
+        <AnimatePresence>
+          {props.actions.map((msg, index) => {
+            return (
+              <motion.div
+                key={msg.ts + index}
+                initial={"pre"}
+                animate={"entry"}
+                exit={"exit"}
+                variants={{
+                  pre: {
+                    translateX: "200%",
+                  },
+                  entry: {
+                    translateX: "0%",
+                  },
+                  exit: {
+                    translateX: "200%",
+                  },
+                }}
+                className="border-2 border-gray-600 flex items-center rounded-md p-2 w-full gap-4"
+              >
+                {msg.icon}
+                {msg.text}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
+    </>
+  );
+}
+
+const items = [
+  {
+    id: "1",
+    text: "Back",
+    icon: <ArrowLeftIcon width={24} height={24} />,
+  },
+  {
+    id: "2",
+    text: "Home",
+    icon: <HomeIcon width={24} height={24} />,
+  },
+  {
+    id: "3",
+    text: "Trash",
+    icon: <TrashIcon width={24} height={24} />,
+  },
+  {
+    id: "4",
+    text: "Forward",
+    icon: <ArrowRightIcon width={24} height={24} />,
+  },
+  {
+    id: "5",
+    text: "Bar chart",
+    icon: <BarChartIcon width={24} height={24} />,
+  },
+  {
+    id: "6",
+    text: "Pie chart",
+    icon: <PieChartIcon width={24} height={24} />,
+  },
+];
+
 function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
-  const items = [
-    {
-      id: "1",
-      text: "Back",
-      icon: <ArrowLeftIcon width={24} height={24} />,
-    },
-    {
-      id: "2",
-      text: "Home",
-      icon: <HomeIcon width={24} height={24} />,
-    },
-    {
-      id: "3",
-      text: "Trash",
-      icon: <TrashIcon width={24} height={24} />,
-    },
-    {
-      id: "4",
-      text: "Forward",
-      icon: <ArrowRightIcon width={24} height={24} />,
-    },
-    {
-      id: "5",
-      text: "Bar chart",
-      icon: <BarChartIcon width={24} height={24} />,
-    },
-    {
-      id: "6",
-      text: "Pie chart",
-      icon: <PieChartIcon width={24} height={24} />,
-    },
-  ];
   const xCenter = window.innerWidth / 2 - 200;
   const yCenter = window.innerHeight / 2 - 200;
   const startPos = useRef([xCenter + 150, yCenter + 150]);
   const init = 180 / items.length;
   const activeIndex = useRef(-1);
   const { pageX, pageY } = useMouse();
+
+  const [actions, setActions] = useState<
+    Array<(typeof items)[0] & { ts: number }>
+  >([]);
+
+  const removeAction = useCallback((ts: number) => {
+    setActions((prev) => {
+      return prev.filter((x) => x.ts !== ts);
+    });
+  }, []);
+
+  const addAction = useCallback((a: (typeof actions)[0]) => {
+    setActions(() => {
+      return [a];
+    });
+  }, []);
 
   useEffect(() => {
     if (!pageX) return;
@@ -82,13 +145,21 @@ function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
   }, [pageX, pageY, props.show]);
 
   useEffect(() => {
-    return () => {
-      activeIndex.current = -1;
-    };
-  }, []);
+    if (!props.show && activeIndex.current >= 0) {
+      const ts = Date.now();
+      addAction({
+        ...items[activeIndex.current],
+        ts,
+      });
+      setTimeout(() => {
+        removeAction(ts);
+      }, 2500);
+    }
+  }, [addAction, props.show, removeAction]);
 
   return (
     <>
+      <ChatMessages actions={actions} />
       {props.show ? (
         <div
           style={{
@@ -97,15 +168,14 @@ function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
             transform: `translate(${xCenter}px, ${yCenter}px)`,
           }}
         >
-          <div
+          <motion.div
             id="holder"
-            className="transition-all duration-100"
             style={{
               // @ts-expect-error heheheheh lmao
               "--mul":
                 activeIndex.current >= 0 ? activeIndex.current - 1 : null,
             }}
-          ></div>
+          ></motion.div>
           <ul
             className={[
               "absolute rounded-full transition-all duration-[10ms] overflow-clip",
@@ -120,11 +190,13 @@ function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
             </div>
             {items.map((item, i) => {
               return (
-                <li
+                <motion.li
+                  layout
                   key={item.id}
-                  className="absolute border-r-[0.5px] border-gray-300 -top-1/2 -left-1/2 transition-all duration-[10] flex flex-row-reverse justify-start items-end"
+                  className="absolute border-r-[0.5px] border-gray-300 -top-1/2 -left-1/2 transition-all duration-[10ms] flex flex-row-reverse justify-start items-end"
                   data-active={i === activeIndex.current}
                   style={{
+                    // need to calculate paddings somehow
                     paddingLeft: "48px",
                     paddingTop: "56px",
                     paddingBottom: "48px",
@@ -146,7 +218,7 @@ function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
                   >
                     {item.icon}
                   </span>
-                </li>
+                </motion.li>
               );
             })}
           </ul>
@@ -183,7 +255,8 @@ function App() {
       </h1>
       <RadialMenu show={showRadial} />
       <footer className="absolute text-sm font-sans bottom-4 left-1/2 -translate-x-1/2">
-        Made by <a href="https://x.com/__sadn1ck__">@__sadn1ck__</a>
+        Made by <a href="https://x.com/__sadn1ck__">@__sadn1ck__</a>, inspired
+        by <a href="https://rauno.me/craft/radial-menu">@raunofreiberg</a>
       </footer>
     </>
   );

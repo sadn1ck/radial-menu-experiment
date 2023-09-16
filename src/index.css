@@ -4,7 +4,7 @@
 
 :root {
   --bg: hsl(0 0% 8.5%);
-  --active: hsl(0 0% 17.9%);
+  --active: #2E2E2E;
   --center: hsl(0 0 11.9%);
 }
 
@@ -41,4 +41,8 @@ html {
   -webkit-mask-composite: xor;
   border-radius: inherit;
   pointer-events: none;
+}
+
+a {
+  @apply text-purple-400;
 }
