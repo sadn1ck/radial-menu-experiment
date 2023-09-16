@@ -254,9 +254,11 @@ function App() {
         Press Tab/tilde to get started
       </h1>
       <RadialMenu show={showRadial} />
-      <footer className="absolute text-sm font-sans bottom-4 left-1/2 -translate-x-1/2">
+      <footer className="absolute text-sm font-sans bottom-8 left-1/2 -translate-x-1/2 text-center">
         Made by <a href="https://x.com/__sadn1ck__">@__sadn1ck__</a>, inspired
-        by <a href="https://rauno.me/craft/radial-menu">@raunofreiberg</a>
+        by <a href="https://rauno.me/craft/radial-menu">@raunofreiberg</a>.
+        Source:{" "}
+        <a href="https://github.com/sadn1ck/radial-menu-experiment">GitHub</a>
       </footer>
     </>
   );
