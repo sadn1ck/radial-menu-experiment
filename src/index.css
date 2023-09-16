@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: hsl(0 0% 8.5%);
+  --active: hsl(0 0% 17.9%);
+  --center: hsl(0 0 11.9%);
+}
+
+html {
+  background: var(--bg);
+  color: white;
+}
+
+[data-active="true"] {
+  background: var(--active);
+}
+
+#holder {
+  content: "";
+  position: absolute;
+  border: 8px solid #1C1C1C;
+  width: calc(100% + 24px);
+  height: calc(100% + 24px);
+  border-radius: 100%;
+  z-index: -1;
+  inset: -12px;
+}
+
+#holder::after {
+  content: "";
+  position: absolute;
+  width: calc(100% + 24px);
+  height: calc(100% + 24px);
+  inset: -12px;
+  padding: 8px;
+  background: conic-gradient(from calc(var(--mul) * 60deg), transparent 83.5%, lightgray 0, lightgray 100%);
+  z-index: 1;
+  -webkit-mask: linear-gradient(black, black) content-box content-box, linear-gradient(black, black);
+  -webkit-mask-composite: xor;
+  border-radius: inherit;
+  pointer-events: none;
+}
