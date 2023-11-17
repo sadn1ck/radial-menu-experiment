@@ -8,6 +8,7 @@ import {
 } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  CSSProperties,
   PropsWithChildren,
   useCallback,
   useEffect,
@@ -20,7 +21,7 @@ interface IRadialMenu {
   show: boolean;
 }
 
-function ChatMessages(props: {
+function Messages(props: {
   actions: Array<(typeof items)[0] & { ts: number }>;
 }) {
   return (
@@ -159,7 +160,7 @@ function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
 
   return (
     <>
-      <ChatMessages actions={actions} />
+      <Messages actions={actions} />
       {props.show ? (
         <div
           style={{
@@ -170,15 +171,16 @@ function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
         >
           <motion.div
             id="holder"
-            style={{
-              // @ts-expect-error heheheheh lmao
-              "--mul":
-                activeIndex.current >= 0 ? activeIndex.current - 1 : null,
-            }}
+            style={
+              {
+                "--mul":
+                  activeIndex.current >= 0 ? activeIndex.current - 1 : null,
+              } as CSSProperties
+            }
           ></motion.div>
           <ul
             className={[
-              "absolute rounded-full transition-all duration-[10ms] overflow-clip",
+              "absolute rounded-full transition-all duration-75 overflow-clip",
             ].join(" ")}
             style={{
               width: "400px",
@@ -193,7 +195,7 @@ function RadialMenu(props: PropsWithChildren<IRadialMenu>) {
                 <motion.li
                   layout
                   key={item.id}
-                  className="absolute border-r-[0.5px] border-gray-300 -top-1/2 -left-1/2 transition-all duration-[10ms] flex flex-row-reverse justify-start items-end"
+                  className="absolute border-r-[0.5px] border-gray-300 -top-1/2 -left-1/2 transition-all duration-75 flex flex-row-reverse justify-start items-end"
                   data-active={i === activeIndex.current}
                   style={{
                     // need to calculate paddings somehow
