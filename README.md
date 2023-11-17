@@ -14,4 +14,5 @@
 
 ## Result
 
-<video src="./docs/radial.mp4" width="100%" />
+
+https://github.com/sadn1ck/radial-menu-experiment/assets/16396161/ad1cf941-235a-49fe-9daf-21fe4c655682
